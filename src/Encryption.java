@@ -1,4 +1,4 @@
-// to do: fix ROT13 decryption bugs, symmetrical + asymmetrical logic, separate presentation from logic...
+// to do: asymmetric, separate presentation from logic...
 // by Catherine McMahon
 
 import java.math.BigInteger;
@@ -23,11 +23,15 @@ public class Encryption {
         } else if(option.equals("s")) {
             System.out.println("Enter text.");
             String text = sc.nextLine();
-            symmetric(text);
+            System.out.println("Enter the key to success");
+            String key = sc.nextLine();
+            symmetric(text, key);
         } else if(option.equals("a")) {
             System.out.println("Enter text.");
             String text = sc.nextLine();
-            asymmetric(text);
+            System.out.println("Enter the key to success");
+            String key = sc.nextLine();
+            asymmetric(text, key);
         } else {
             main(args);
         }
@@ -41,7 +45,6 @@ public class Encryption {
         for(int i=0; i<input.length(); i++) {
             char ch = input.charAt(i);
             int e = ((((ch-32) + 13) % 95) +32);
-            
             encrypt += String.valueOf(Character.toChars(e));
         }
         System.out.println("Encrypted text: "+ encrypt);
@@ -49,31 +52,53 @@ public class Encryption {
         // decryption
         for(int i=0; i<encrypt.length(); i++) {
             char c = encrypt.charAt(i);
-            int g = (((c+32) - 13) % 95 -32);
-            
-            if(g<0) {
-                g = g*(-1);
-                decrypt += String.valueOf(Character.toChars(g));
-            } else if(g>0) {
-                decrypt += String.valueOf(Character.toChars(g));
+            int g = c - 32; // translate to space
+            g -= 13; // Inverse Rot13
+            while( g < 0 ){
+                g+=95;
             }
+            g += 32; // translate back
+            decrypt += String.valueOf(Character.toChars(g));
+            
         }
         System.out.println("Decrypted text: "+ decrypt);
     }
     
-    public static void symmetric(String input) {
-    }
-    
-    public static void asymmetric(String input) {
+    public static void symmetric(String input, String key) {
         String encrypt = "";
         String decrypt = "";
         
-        int p = 11; // large prime num
-        int q = 5; // large prime num
-        int n = p*q; // RSA modulus
-        int totientN = (p-1)*(q-1);
+        while(key.length()<input.length()) {
+            key+=key;
+        }
+        
+        for(int i=0; i<input.length(); i++) {
+            char m = input.charAt(i); // get string value at i
+            char k = key.charAt(i); // get key value at i
+            encrypt += String.valueOf(Character.toChars(m+k));
+        }
+        System.out.println("Encrypted text: " + encrypt);
+        
+        // decryption
+        for(int j=0; j<encrypt.length(); j++) {
+            decrypt += String.valueOf(Character.toChars(encrypt.charAt(j) - key.charAt(j)));
+        }
+        System.out.println("Decrypted text: " + decrypt);
+    }
+    
+    public static void asymmetric(String input, String key) {
+        String encrypt = "";
+        String decrypt = "";
+        
+        BigInteger p = new BigInteger("11"); // large prime num
+        BigInteger q = new BigInteger("5"); // large prime num
+        BigInteger n = p.multiply(q); // RSA modulus
+        BigInteger totientN = new BigInteger("(p-1)*(q-1)"); // totient N
+        
+        //		BigInteger e = new BigInteger
         // e of public key, relatively prime num (ex: 3, 7, 9..)
-        int rand = 1 + (int)(Math.random() * totientN);
+        
+        //		int e = 1 + (int)(Math.random() * totientN);
         // extended Euclidean algorithm to solve for d of private key
         // use powMod for algorithm
         // Back substitution
@@ -84,7 +109,7 @@ public class Encryption {
         //			Compute n = pq.
         //			Compute φ(n) = φ(p)φ(q) = (p − 1)(q − 1) = n - (p + q -1), where φ is Euler's totient function.
         //			Choose an integer e such that 1 < e < φ(n) and gcd(e, φ(n)) = 1; i.e., e and φ(n) are coprime.
-        //			Determine d as d ≡ e−1 (mod φ(n)); i.e., d is the modular multiplicative inverse of e (modulo φ(n)).
-        //			This is more clearly stated as: solve for d given d⋅e ≡ 1 (mod φ(n))    
+        //			Determine d as d ≡ e−1 (mod φ(n)); i.e., d is the modular multiplicative inverse of e (modulo φ(n)).  
+        //			This is more clearly stated as: solve for d given d⋅e ≡ 1 (mod φ(n))
     }
 }
