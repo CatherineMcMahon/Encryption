@@ -9,7 +9,7 @@ public class Encryption {
     private static ArrayList<Object> arr;
     private static Scanner sc;
     
-    //must work with punctuation + spaces
+    // All presentation logic in main method
     public static void main(String[] args) {
         arr = new ArrayList<Object>();
         sc = new Scanner(System.in);
@@ -89,27 +89,35 @@ public class Encryption {
     public static void asymmetric(String input, String key) {
         String encrypt = "";
         String decrypt = "";
+        int value = 0; // end value of Euler's Algorithm
         
-        BigInteger p = new BigInteger("11"); // large prime num
-        BigInteger q = new BigInteger("5"); // large prime num
+        Random rnd = new Random();
+        BigInteger p = BigInteger.probablePrime(1024, rnd); // large prime num
+        BigInteger q = BigInteger.probablePrime(1024, rnd); // large prime num
         BigInteger n = p.multiply(q); // RSA modulus
-        BigInteger totientN = new BigInteger("(p-1)*(q-1)"); // totient N
+        BigInteger totientN = (p.subtract(BigInteger.ONE)).multiply(q.subtract(BigInteger.ONE)); // φ (totient) N
+        BigInteger e = totientN.gcd(BigInteger.ONE);
+        while(value!=1) {
+            //do equation // plug in values
+        }
+        //do encryption, base 64, output
+        // base 64 -> bytes -> BigInteger
+        // decrypt...
         
-        //		BigInteger e = new BigInteger
-        // e of public key, relatively prime num (ex: 3, 7, 9..)
-        
-        //		int e = 1 + (int)(Math.random() * totientN);
-        // extended Euclidean algorithm to solve for d of private key
-        // use powMod for algorithm
-        // Back substitution
-        
-        //		RSA Algorithm:
-        //
-        //			Choose two distinct prime numbers p and q.
-        //			Compute n = pq.
-        //			Compute φ(n) = φ(p)φ(q) = (p − 1)(q − 1) = n - (p + q -1), where φ is Euler's totient function.
-        //			Choose an integer e such that 1 < e < φ(n) and gcd(e, φ(n)) = 1; i.e., e and φ(n) are coprime.
-        //			Determine d as d ≡ e−1 (mod φ(n)); i.e., d is the modular multiplicative inverse of e (modulo φ(n)).  
-        //			This is more clearly stated as: solve for d given d⋅e ≡ 1 (mod φ(n))
     }
+    
+    
+    //		BigInteger e = new BigInteger
+    // e of public key, relatively prime num (ex: 3, 7, 9..)		
+    //		int e = 1 + (int)(Math.random() * totientN); 
+    // extended Euclidean algorithm to solve for d of private key
+    // use powMod for algorithm
+    // Back substitution
+    //		RSA Algorithm:
+    //			Choose two distinct prime numbers p and q.
+    //			Compute n = pq.
+    //			Choose an integer e such that 1 < e < φ(n) and gcd(e, φ(n)) = 1; i.e., e and φ(n) are coprime.
+    //			Determine d as d ≡ e−1 (mod φ(n)); i.e., d is the modular multiplicative inverse of e (modulo φ(n)).  
+    //			This is more clearly stated as: solve for d given d⋅e ≡ 1 (mod φ(n))
+}
 }
